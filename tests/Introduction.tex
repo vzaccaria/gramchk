@@ -1,0 +1,22 @@
+%\section{Introduction}
+\label{sec:introduction}
+
+The data deluge we are confronting today takes everyone  to continuously search and discover new information. The opportunity to access a large amount of information, however, does not always correspond to an increase of knowledge. Many times, indeed, one does not know how to filter data ``on-the-fly'' to obtain the information that is the most suitable to the current context of use. This is even more critical when using mobile devices that are still characterized by limited capabilities (memory, computational power, transmission budget). 
+
+Given this evidence, our research focuses on the definition of methods and tools for the design and development of \emph{Context-Aware Mobile mashUpS} (CAMUS)\cite{DBLP:conf/icwe/CorvettaMMQRT15}.
+CAMUS leverage the results of two main research lines, related to the design of context-aware systems and mashups, with the aim to support  developers in the creation of  flexible apps that dynamically gather and combine data from heterogeneous data sources filtered on the basis to the users' situational needs. With respect to traditional applications, designed to satisfy predefined requirements, the CAMUS added-value is their intrinsic capability of identifying pertinent data sources, i.e., adequate with respect to the current users' needs, and pervasively
+presenting them to the final user in form of context-aware integrated visualizations deployed as mobile apps. This application paradigm overcomes the limits posed by pre-packaged apps and offers to the users flexible and personalized applications, whose structure and content may even emerge at runtime based on the actual user needs and situation of use.
+
+In this paper we will show how CAMUS design and development can take advantage of a set of high-level abstractions for context and mashup modeling. In particular, we will present a novel design methodology and related tools for fast prototyping of mobile mashups, where context becomes a first-class modeling dimension
+improving \emph{i)} the identification of the most adequate resources
+that can satisfy the users' information needs and \emph{ii)} the
+consequent tailoring at runtime of the provided data and
+functions. We start from two consolidated approaches for context modeling \cite{DBLP:journals/debu/BolchiniOQST11,DBLP:journals/cacm/BolchiniCOQRST09} and mashup modeling \cite{journals/TWEB2015/CappielloMP15} and  show how the synergies of the two approaches can be amplified to define a new design methodologies for the fast prototyping of flexible mobile apps. %to for the fast prototyping of mobile apps and, as such,
+
+This paper is organized as follows: Section \ref{sec:Rationale} clarifies the motivations of our work and summarizes the main elements that characterize our design method by also comparing it with other similar approaches. Section \ref{sec:methodology} describes the main design steps based on the adoption of two consolidated methods for context and mashup modeling, which are however integrated and somehow augmented or revisited to fulfill with the each other's peculiarities. Section \ref{sec:platform} illustrates the architecture of the resulting framework, which supports both the design of CAMUS apps, by means of visual design environments, and the context-aware execution of the generated mobile apps. Section \ref{sec:conclusions} finally outlines our conclusions and describes our future work.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../2016-ICWE"
+%%% End:
+

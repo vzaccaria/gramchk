@@ -1,25 +1,52 @@
 /* eslint quotes: [0], strict: [0] */
-var {
-    $d, $o, $f
+let {
+    $d, $o, $f, $r, $fs, _
     // $r.stdin() -> Promise  ;; to read from stdin
 } = require('zaccaria-cli')
 
-var getOptions = doc => {
+let langtool = require('./lib/dr_languagetool').check
+let csoutput = require('./lib/checkstyle')
+let readUnsugared = require('./lib/unsugar');
+let path = require('path');
+let readConfig = require('./lib/config');
+
+let getOptions = doc => {
     "use strict"
-    var o = $d(doc)
-    var help = $o('-h', '--help', false, o)
+    let o = $d(doc)
+    let help = $o('-h', '--help', false, o)
+    let num = $o('-h', '--num', 100, o);
+    let auto = $o('-a', '--auto', false, o);
+    let huntex = $o("-x", "--huntex", false, o);
+    let latex = $o('-l', '--latex', false, o);
+    let dump = parseInt($o('-d', '--dump', 0, o));
+    let file = o.FILE
+    if (auto && path.extname(file) === '.tex') {
+        latex = true;
+    }
     return {
-        help
+        help, file, num, latex, dump, huntex
     }
 }
 
-var main = () => {
+let probe = (config) => {
+    console.log(config.text)
+    return config
+}
+
+let main = () => {
     $f.readLocal('docs/usage.md').then(it => {
-        var {
-            help
+        let {
+            help, file, num, latex, huntex
         } = getOptions(it);
         if (help) {
             console.log(it)
+        } else {
+            readConfig({
+                file, latex, num, huntex
+                })
+                .then(readUnsugared)
+                .then(langtool)
+                .then(csoutput)
         }
     })
 }

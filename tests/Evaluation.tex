@@ -1,0 +1,94 @@
+%\subsection{Evaluation}
+\label{subsec:evaluation}
+
+In this section we provide a preliminary characterization of the performance of the system.
+Since the application is still under active development, the numbers shown here
+are to be considered with care. However, we think that they provide some interesting insights on the feasibility of context-aware strategies for service selection and querying, as the ones illustrated in the previous sections. 
+
+\subsubsection{System and workload model.}
+To model the system, we use a basic M/G/1 queue \cite{sundarapandian2009probability}. In fact
+our system behaves as:
+
+\begin{itemize}
+\item M/*/*: a service node where request arrival follows a \emph{markovian}
+process, i.e. requests arrive continuously and independently at a
+constant average rate $\lambda$. We will use this assumption in the
+characterization of the response time.
+
+\item */G/*: the service rate distribution is not yet known, so we assume it being a
+general distribution with fixed mean and variance.
+
+\item */*/1: a single process (Node.js) serves incoming requests.
+\end{itemize}
+
+The system used for  workload evaluation is characterized by an Intel Core i5-5257U CPU, with 2 cores and a 3GHz frequency, a 8 GB DDR3 RAM, and an SSD disk of 128GB.  
+
+%The following are the characteristics of the system used for the workload evaluation:
+
+%\begin{center}
+    %\begin{tabular}{ l l l }
+    %Parameter && Value \\ \hline
+    %CPU && Intel Core i5-5257U \\
+    %Cores && 2 \\
+    %CPU frequency && 3GHz \\
+    %RAM && 8 GB DDR3 \\
+    %Disk && SSD, 128GB \\
+    %\end{tabular}
+%\end{center}
+
+
+\subsubsection{Service time.} The service time is the time it takes
+for a single request to be served. To better understand the
+distribution of the service time (which has been assumed as
+\emph{general} in the previous paragraph), we use a sequence of 500
+back-to-back requests, where each request is sent once the previous
+one has been served. Requests are served by the system with a
+first-come/first served (FCFS) policy. We opportunely stubbed the
+\emph{query handler} in order to measure just the internal delays of
+the system components.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{Images/service-time.pdf}
+\caption{Distribution of the service time.}
+\label{fig:service-time}
+\end{figure}
+
+
+Figure \ref{fig:service-time} shows the histogram of the measured response time.
+To a first inspection, the shape of the distribution seems to agree with a log-normal distribution whose parameters are $\mu = 202 (ms), \sigma = 6.4 (ms)$.
+This suggests an ability to sustain almost 5 requests per second. We will use this information to generate a workload of independent requests.
+
+\subsubsection{Response time.}
+When receiving independent requests (which can arrive before the current one is effectively served), the system can show a delay which is due to requests queuing up. To characterize the behavior
+under this type of workload, we generate a sequence of requests using an exponential arrival-rate distribution. The exponential distribution is in fact congruent with the markovian arrival-rate assumption made above:
+
+$$f(x;\lambda) = \mathrm \lambda e^{-\lambda x}, \textrm{where}~ x \geq 0$$
+
+\noindent where $\lambda$ characterizes the rate of generation of independent requests and $x$ is the
+time between one request and the next.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{Images/exponential-response-time.pdf}
+\caption{Distribution of the response time under varying workload.}
+\label{fig:response-time}
+\end{figure}
+
+Figure \ref{fig:response-time} shows the box-plot charts for a varying
+request rate, from 1 to 5 requests per seconds (saturation threshold). As can
+be seen, the system exhibits a robust response up to $\lambda <
+4$. After that point, both variance and mean of the response time
+exponentially diverge, approaching the saturation point individuated
+in the previous paragraph.
+
+\subsubsection{Discussion.}
+The above analysis brings us to an interesting insight which we are going
+to investigate further in our work: the service time is log-normally distributed. This type
+of distribution is characteristic of a process which is a product of many independent random variables. Our conjecture is that this could be due to the way in which the response elaboration has been split across the components, thus the software composition might play a role in the performance
+of the system. This is however a preliminary observation that needs to be corroborated by means of  wider and deeper investigation.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../2016-ICWE"
+%%% End:

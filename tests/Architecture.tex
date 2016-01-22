@@ -1,0 +1,86 @@
+%\subsection{Architecture}
+\label{subsec:architecture}
+
+The architecture of the final system is server-centric. The framework used to develop the \emph{Server} is Node.js and the database used is MongoDB. The Server's main functionality is to provide the integrated result set to the
+mobile app. This process involves \emph{i)} the analysis of the user's context
+to select the services to be queried and, \emph{ii)}
+querying the selected services and transforming their results into
+an integrated data set to be rendered by the mobile app.
+
+%
+%\begin{figure} [ht]
+%\centering
+%\includegraphics[width= 0.6 \textwidth]{Images/camus-architecture-new2016.png}
+%\caption{Architecture of the CAMUS framework.}
+%\label{fig:architecture}
+%\end{figure}
+%
+
+The \emph{Server} exposes several endpoints to enable both the execution of service queries as well as CRUD operations on other system data, such as the users, the Universal CDT or the descriptors in the service repository. 
+The main API is compliant with the {GraphQL API specification} \cite{docs:specs/facebook/graphql}.
+GraphQL offers a layer that enforces a set of custom-defined typing
+rules on the data sent and received via HTTP. Besides, it provides a
+flexible way to specify the response format, by making it easier to
+support different generations of APIs.
+
+The \emph{Visual Design Environment} consists of a suite of Web
+applications to: \emph{i)} easily register new services to
+the system, \emph{ii)} specify visually (and automatically generate an internal representation of) the CDTs and the
+associations of services with pertinent nodes, %(by also identifying filter and ranking
+%attributes for service selection), 
+and \emph{iii)} design the final mashups and generate their
+schema. %The last application provides a virtual device to
+%directly see how the final result will be shown on the client. The
+%user (of the design environment) can drag and drop the semantic
+%definitions (\emph{terms}) that correspond to the fields of the server
+%response.   In addition, it is possible to define \emph{support
+%services} that can provide additional information to the user.
+
+The \emph{Client App} manages the interaction of the end-user with the whole
+system. During its initialization, the app loads  the user CDT and the mashup schemas to be rendered.
+The instantiation of views is driven by the mashup schemas and the user interacts
+with them in two phases: \emph{i)} when selecting pertinent dimensions characterizing the current context, e.g.,
+choosing an interest topic, and \emph{ii)} when accessing the integrated result set built by the server and communicated back to the app. Do note that not all context elements must be chosen by the end user; conversely, most of them will be detected directly by the device, as for example the current place or the temperature.
+View rendering is based on a JSON schema file and uses a
+cross-platform native technology
+to build the resulting user interface elements.
+%Most support services are used in the app interacting with the existing
+%apps of the system, for instance using the default maps app or the
+%default browser.
+
+%
+\begin{figure} [t]
+\centering
+\includegraphics[width=\textwidth]{Images/camus_server_flow_oriz.png}
+\caption{Server request flow.}
+\label{fig:requestFlow}
+\end{figure}
+%
+
+%\subsubsection{Request processing steps} 
+A typical request from the
+client is composed of a JSON payload that describes the \emph{context}
+and a specification of the  format of the data that is expected by the
+client. As represented in Figure \ref{fig:requestFlow}, the request is thus processed through the following steps:
+
+\begin{itemize}
+
+\item The \emph{Context Manager} parses the context  and ``decorates" it with all the Augmented UCDT information (services, ranks etc.) related to its elements.
+
+\item Based on analyzed context, the \emph{Primary Service Selection} component selects the services to be
+queried.
+
+\item The \emph{Query Handler} queries the
+selected services by using service-specific bridges that wrap the retrieved result sets and transform them into a common internal representation that complies with the semantic terms associated to the different service attributes. This internal representation enables merging the different data sets based on attributes associated with the same terms.
+
+\item Finally, possible duplicates are removed and the activation of support services - if any, is
+bound to the selection of specific attributes in the integrated result set, as defined by the mashup designer when creating the mashup.
+
+\end{itemize}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../2016-ICWE"
+%%% End:

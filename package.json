@@ -1,7 +1,7 @@
 {
   "name": "gramchk",
   "version": "0.0.1",
-  "description": "No name given yet",
+  "description": "A hub of grammarchecks at your disposal.",
   "main": "index.js",
   "bin": {
     "gramchk": "./index.js"
@@ -9,7 +9,7 @@
   "man": "./man/man1/gramchk.1",
   "scripts": {
     "test": "make test"
-    },
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/vzaccaria/gramchk.git"
@@ -21,7 +21,13 @@
   },
   "homepage": "https://github.com/vzaccaria/gramchk",
   "dependencies": {
-	  "zaccaria-cli": "*"
+    "bluebird": "^3.1.1",
+    "debug": "^2.2.0",
+    "superagent": "^1.6.1",
+    "superagent-promise": "^1.1.0",
+    "urlencode": "^1.1.0",
+    "xml2js": "^0.4.15",
+    "zaccaria-cli": "^0.2.0"
   },
   "devDependencies": {
     "diy-build": "^1.0.8",
@@ -31,8 +37,8 @@
     "mocha": "*",
     "chai": "*",
     "chai-as-promised": "*",
-	  "mustache": "~2.1.2",
-	  "stupid-replace": "~0.0.3",
-	  "git-hist": "*"
+    "mustache": "~2.1.2",
+    "stupid-replace": "~0.0.3",
+    "git-hist": "*"
   }
 }

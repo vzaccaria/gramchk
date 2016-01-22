@@ -1,0 +1,132 @@
+    %\subsection{Implementation}
+\label{subsec:implementation}
+
+%In the sequel of this section we describe in detail the role of each component of the system. 
+
+\subsubsection{Primary service selection}
+As illustrated above, the \emph{Context
+Manager} takes care of  decorating the user's current context with
+the information coming from the Augmented  Universal CDT. 
+%The context nodes are divided into categories used by
+%the \emph{Primary Service Selection} component to select
+%the services to be queried.
+%This step involves the use of two main categories of nodes, 
+%\emph{filter} and \emph{ranking} nodes, as specified during the augmentation of the Universal CDT operated by the platform administrator.
+%
+Service selection is thus operated by interpreting
+the request context as a key-value query, and using this representation to ``traverse'' the Universal CDT specification. 
+%The result of the query is a set of primary dimension nodes in the Universal CDT and their associated services. 
+The result of the query is a set of \emph{Service Associations} (\emph{SA}) that fit to the current context. Each association is composed by the priority that a service has in the node and the node's weight. These parameters are defined when the Universal CDT is modeled: the priority is an increasing integer starting from 1 and the weights are predefined values assigned following the rule that a filter node's weight must be less than a ranking one.
+%Nodes' weights, defined when the Universal CDT is modeled, are considered to compute the relevance of each selected service. These weights depend on the kind of visited nodes: for example, a filter node's weight is minor than a ranking node's weight. 
+The final relevance
+value for each service \emph{s} is thus computed from the weights $w_i$
+and node priority $p_i$ as:
+
+\begin{equation}
+R_s = \sum_{i \in SA(s)} \frac{w_i}{p_i}
+  \label{eq:relevance}
+\end{equation}
+
+
+The obtained value is used to rank and filter the $N$ top relevant services
+for the query.
+
+\subsubsection{Query handling}
+
+%We've built the query handling by decomposing the implementation into
+A service-agnostic \emph{Query Handler} composes queries to the selected services; a number of bridges than invoke the services. We supply a default bridge for REST-type services plus an abstract class that can be extended for implementing new
+bridges covering further service types. 
+
+A bridge receives a service description
+provided by the Query Handler and builds the URL where the
+service should be queried. During this composition, the bridge uses the context to
+retrieve the list of parameter nodes which, in turn, store the values
+that are needed to perform the query.
+The bridge also supports the pagination of the result set based on either page number or token. When all the
+necessary queries are completed, it sends  the
+responses obtained back to the Query Handler.
+
+\subsubsection{Response aggregation}
+
+The \emph{Response Aggregator} executes two main tasks: \emph{i)} merging
+items that refer to a same instance and \emph{ii)} scoring each instance.
+In fact, two or more services
+might return data referring to a same instance; thus duplicate
+identification is needed to discover equal or similar instances and merge them
+in a unique object. The fusion then produces a richer
+set of attributes for an instance, as one service can provide
+attributes not supplied by another service. 
+
+%The response returned by the service with the greatest relevance is used as base
+%for the merging. As this depends in turn on service priority, it is
+%possible for the mashup designer  to influence this operation by
+%modifying the priority itself.
+
+Merging is computationally intensive as it requires comparing among them all the instances in any service result set. To reduce this complexity, 
+we devised some optimizations. First, instance item is classified by
+the phonetic code of its key attribute (for example, the title), using some phonetic string matching metrics\footnote{Our current prototype uses the Chapman's Soundex metrics\cite{Zobel:1996}.}; then, inside each class,
+a pair-to-pair comparison of all the common attributes is used to compute a
+similarity index. If this value is greater than a predefined
+threshold, the two items are considered similar and they are fused
+together. The complexity of this comparison strategy is $O(n)$ (i.e., linear in the number of analyzed instances). 
+
+\subsubsection{Support service selection}
+The Support Service Selection is similar to the Primary Service
+Selection. However, a support service is selected and included in the mashup if and only if all the bindings defined between the mashup core data and the operations exposed by the support service, as defined by the mashup designer, are satisfied. This to
+avoid the runtime invocation of services that are not applicable to a
+particular context, as the needed input parameters are not provided by the integrated result set or by the usage context. The result of the support service selection
+is a set of service endpoints that are communicated to the client within the mashup schema, so that the mobile app can directly invoke the service to retrieve and visualize the auxiliary data.
+
+\subsubsection{Mobile App Execution}
+
+The mobile app is developed using {
+React Native} \cite{docs:specs/facebook/react-native}, a tool recently
+introduced by Facebook to streamline the production of cross-platform
+mobile apps. The app logic is written in Javascript and, for the most
+part, is agnostic with respect to the target platform.
+React enforces a pseudo-functional/reactive approach that involves a
+central state (which holds the \emph{model} of the application) and a
+number of pure functions that render the view. The view elements, in
+turn, can produce actions that act on the state through a dispatcher
+while network responses represent another source of actions that can
+change the state.
+The state of the app serves the rendering of the views and their
+data. It is mainly composed of the mashup data, the current interest
+topic, the CDT and the result of the current context-based query.
+
+
+\emph{\textbf{The app life cycle.}}
+At the application startup, the user chooses the current interest
+topic. The context selection page allows the editing of the current
+context by the user and also probes the hardware for sensors data. When the
+user finalizes the context input, a GraphQL query is built and sent to
+the server. The request specifies the structure the incoming data
+should have in order to be rendered in the results page. An important
+difference with respect to a more traditional approach like REST is
+that different clients can request different data formats from the same
+end point. Once received, the data is stored in the main application
+state and the app view is re-rendered by hydrating a React Native
+template.
+
+The view schema provides a very flexible mashup design. As reported in Figure \ref{fig:requestFlowApp}, every page is
+associated with the corresponding key in the file (e.g.: \texttt{results},
+\texttt{details}, ...) and, at render time, the view builder loads the schema
+dedicated to the rendering of data for the current topic (tag \texttt{topics}); potentially,
+the app is able to render a different view for each possible topic.
+The tag \texttt{contents} specifies the view elements; thanks to the
+\texttt{style} attribute it is possible to pass directly to the app 
+CSS-like style attributes used in React. The elements within the \texttt{contents} tag are
+defined recursively, thus enabling a very customizable design of the
+app, as in principle any single view element can be defined in this way and then dynamically instantiated.
+
+\begin{figure} [t]
+\centering
+\includegraphics[width=0.9\textwidth]{Images/app_dataflow_architectureMari.png}
+\caption{App data flow.}
+\label{fig:requestFlowApp}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../2016-ICWE"
+%%% End:

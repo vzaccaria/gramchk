@@ -1,0 +1,5 @@
+languagetool:
+  ignoredSuggestions:
+    - smashup
+    - Axis
+    - smashups

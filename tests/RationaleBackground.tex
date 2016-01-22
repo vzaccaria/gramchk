@@ -1,0 +1,67 @@
+%\section{Rationale and Background}
+\label{sec:Rationale}
+
+The CAMUS project merges techniques coming from two areas whose role is fundamental for the solution of problems that   relate to the design of mobile systems. The first area deals with the issue of  information overload by introducing techniques based on  context-awareness, while the other one addresses the issue of  the seamless integration of data and services. Therefore, both promote the creation of flexible mobile applications which dynamically gather and combine data from heterogeneous data sources, supporting the users' situational needs.
+
+\subsection{Context-Awareness}
+The research on context-awareness dates back to the 90's, when the research community raised the problem of representing contextual user and system activities \cite{DBLP:conf/huc/AbowdDBDSS99}. While the computer science professional community has initially perceived the context only as a matter of user location and time of the day, more recently this notion has been extended including, in the idea of context, other personalization aspects like current user interests, current role of the user in the system, the company  the user keeps at the moment, and  all the other situational dimensions that may depend on the specific application at hand \cite{DBLP:journals/sigmod/BolchiniCQST07}.
+
+In CAMUS, the perspectives that characterize the different contextual situations in which the users can
+act in a given application scenario are modelled  by means of the so-called \emph{Context Dimension Model} \cite{DBLP:journals/cacm/BolchiniCOQRST09}, which provides the constructs to define at design-time
+the Universal Context Dimension Tree (\emph{Universal CDT}). As represented in Figure \ref{fig:UCDT}(a), the Universal CDT is a hierarchical structure consisting
+of \emph{i)} \emph{context dimensions} (black nodes), modeling the different perspectives through which the user perceives the application domain
+(e.g., \emph{time}, \emph{interest topic}, \emph{transport}), \emph{ii)} the allowed \emph{dimension values}
+(white nodes), i.e., the values used to tailor the context-aware information (e.g., ``morning'', ``with car'', ``culture''), and \emph{iii)} \emph{variables} (e.g., ``geographic coordinates'' for a \emph{location }dimension), that are either custom values supplied by the user at run-time or data acquired by device sensors (e.g., the current GPS coordinates of a given device).  The dimension values  and the variables are also called \emph{context elements}.
+
+Note that the adoption of a hierarchical
+structure allows us to employ different abstraction levels to specify and represent contexts. Any sub-tree of the Universal CDT with at most one element for each dimension represents \emph{a possible user context}.
+%Figure \ref{fig:UCDT} shows an example of universal CDT, while 
+Figure \ref{fig:UCDT}(b)  shows a possible context for the Universal CDT of Figure \ref{fig:UCDT}(a).
+
+%
+\begin{figure} [t]
+\centering
+\includegraphics[width= 0.8 \textwidth]{Images/CDT&Context.pdf}
+\caption{Example of Universal CDT and a possible context.}
+\label{fig:UCDT}
+\end{figure}
+%
+
+%%
+%\begin{figure} [ht]
+%\centering
+%\includegraphics[width= 0.7 \textwidth]{Images/context.png}
+%\caption{A context from the Universal CDT of Figure \ref{fig:UCDT} }
+%\label{fig:context}
+%\end{figure}
+%%
+
+The CDT was originally introduced to tailor, at design time, a portion of a global database, in order to allow the users to access contextual views of huge datasets.
+In this paper we will describe how, when a certain context %(possibly equipped with variable values)
+is detected at run-time by the system
+by means of  device sensors or using some information provided by the user,  the context-relevant services are invoked and the user is provided with the appropriate contextual service mashup.
+
+\subsection{Mobile Mashups}
+Mashups  are ``composite'' applications constructed by integrating ready-to-use functions and content exposed by public or private services and Web APIs \cite{DBLP:books/sp/DanielM14}. The mashup composition paradigm was initially exploited in the context of the consumer Web for creating rapidly simple Web applications reusing programmable APIs and content scraped out from other Web pages. %A huge number of new applications were for example built integrating data sources with Google Maps -- \emph{HousingMaps} (\url{http://www.housingmaps.com/}) was the first one integrating Craglist's housing lists with Google Maps.
+Soon the potential of such lightweight integration practice emerged in other domains where the possibility to create rapidly new applications, also by laypeople, is an important requirement. Much emphasis has been posed in the last years on the composition paradigm, as it is considered a factor enabling the addition of significant new value with respect to other development practices. Intuitive notations and visual design environments can offer the advantage for designers, or even end users, to achieve effective applications matching exactly their needs, by reusing and customizing existing resources in a short time and without programming. Therefore, several approaches have proposed composition paradigms based on visual notations that abstract relevant mashup development aspects and operations.
+
+Among the proposed approaches for mashup design, very few specifically concentrate on mobile mashups. In \cite{DBLP:conf/icwe/ChaisatienPT11} the authors illustrate a mobile generator system that aims to support fast prototyping as it is able to automatically generate a large part of the application code. However, this approach does not support content integration, while we believe this is a fundamental feature for the mobile usage context where integrated views can greatly improve the user experience. Also, it proposes a domain specific language with abstractions that are very close to the ones of the Android execution platform. The approach indeed focuses exclusively on Android apps and does not exploit modeling as a means to abstract from specific technology and achieve multi-platform deployment.
+
+Recently proposed services, like IFTTT (If This Than That - \url{https://ifttt.com/wtf}) and Atooma (\url{http://www.atooma.com}),
+enable users to synchronize the behavior of different apps through simple conditional
+statements. However, they do not support at all the integration of different data sets
+and of corresponding UIs.
+
+For the design of CAMUS apps, we adopt the approach presented in \cite{journals/TWEB2015/CappielloMP15}. It is based on a UI-centric paradigm for data integration, as it requires acting directly on the user interface of the mashup under construction, in a kind of live-programming paradigm where each composition action corresponds to a data integration operation that generates an immediate visual feedback on the artifact under construction \cite{DBLP:conf/www/CappielloMPCG12,DBLP:conf/hci/CappielloMP13}. One of its distinguishing feature is the capability of abstracting from specific technologies of the target applications. In line with the Model-Driven Engineering (MDE) philosophy, it indeed leverages on the generation of application schemas, and on their interpretation in different execution platforms by means of engines supporting the generation of code for native application. This is a very relevant feature: recent studies on device and traffic share information report on a generally observed attitude of users to access applications through different devices (desktop and mobile) \cite{ComScore2015}.
+
+\subsection{Context-aware Mobile Mashups}
+The literature reports on different experiences for the development of context-aware mobile applications, showing how applications can be extended to gather and use context at runt-time \cite{Schaller:2014:MTG:2637002.2637052}. However, these works consider context-awareness as an orthogonal dimension, to be programmed \emph{ad-hoc} for any application, while they do not provide conceptual models and design frameworks.
+
+In \cite{DBLP:conf/wise/DanielM08} the authors show how a mashup design environment may implicitly provide support for context-awareness, thanks to the introduction of mashup components in charge of managing context, i.e., capturing context events and activating related operations in other components of the mashup. Although effective, the approach does not provide any abstraction to model the context; the designer is in charge of configuring the context components (basically location and time) by means of parameter settings. 
+
+\emph{MyService }is a mashup design framework that supports the creation of context-aware services based on rules \cite{LeeJoo2013}. It provides an Android design environment that allows end users to select pre-defined context-based recommendation rules on top of a service directory. Proper services are thus selected depending on the context gathered at runtime, and the code of a mashup is generated. This approach is in line with our idea to filter at runtime services by means of a context representation. However, MyService focusses especially on location-based adaptations, while we are able to cover any dimension that can filter content. The CDT model indeed is generic with respect to the specific domain, allowing for the representation of  all possible perspectives that characterize context  by means of the generic concept of context dimension. Also, MyService does not support data integration and it is not clear whether the generated code also covers the rendering of User Interface views. In the following sections we will show how we address this point -- which is crucial especially when different execution platforms are addressed, by means of advanced technologies that instantiate views in the mobile app starting form an abstract schema of the integrated data set to be provided by the app.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../2016-ICWE"
+%%% End:
