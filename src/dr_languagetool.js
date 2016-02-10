@@ -10,6 +10,8 @@ let {
     stripMarkdown
 } = require('./strip')
 
+let { addErrors } = require('./config');
+
 let urlencode = require('urlencode');
 
 let {
@@ -24,7 +26,7 @@ function removeSuggestions(errors, sugArray) {
 function processItem(i) {
     i = i.$
     let {
-        fromx, fromy, tox, toy, category, msg, replacements
+        fromx, fromy, category, msg, replacements
     } = i;
     replacements = _.take(replacements.split('#'), 5)
     let suggestion = replacements[0]
@@ -32,7 +34,7 @@ function processItem(i) {
     let editormessage = `${category}: ${msg} (${replacements})`
     let source = `languageTool.${i.ruleId}`;
     return {
-        fromx, fromy, tox, toy, editormessage, source, suggestion
+        fromx, fromy, editormessage, source, suggestion
     };
 }
 
@@ -45,7 +47,6 @@ function check(config) {
     let language = _.get(config, "language", "en-us");
 
     text = stripMarkdown(text)
-    debug(text)
     text = urlencode(text);
     return agent.post(url).send(
         "language=" + language
@@ -60,11 +61,10 @@ function check(config) {
         let errorCollection = (_.map(parsed.matches.error, processItem));
         debug(JSON.stringify(errorCollection, 0, 4))
         errorCollection = removeSuggestions(errorCollection, ignoredSuggestions)
-        errorCollection = _.take(errorCollection, config.num);
-        return _.assign(config, { errorCollection });
+        return addErrors(config, errorCollection);
     }).catch((err) => {
-        console.log("Error " + err);
-        throw err;
+        debug("Error " + err);
+        return addErrors(config, []);
     })
 }
 

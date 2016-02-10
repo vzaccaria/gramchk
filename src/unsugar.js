@@ -18,7 +18,9 @@ let debug = require('debug')(__filename);
 function readUnsugared(config) {
     let file = config.file
     let cb = (text) => {
-        debug(text)
+        if(config.dump) {
+            console.log(text)
+        }
         return _.assign(config, {
             text
         })

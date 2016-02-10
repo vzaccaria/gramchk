@@ -1,14 +1,16 @@
 /* eslint quotes: [0], strict: [0] */
 let {
-    $d, $o, $f, $r, $fs, _
+    $d, $o, $f, $r, $fs, _, $b
     // $r.stdin() -> Promise  ;; to read from stdin
 } = require('zaccaria-cli')
 
 let langtool = require('./lib/dr_languagetool').check
+let atdtool = require('./lib/dr_atd').check
 let csoutput = require('./lib/checkstyle')
+let debug = require('debug')(__filename);
 let readUnsugared = require('./lib/unsugar');
 let path = require('path');
-let readConfig = require('./lib/config');
+let { readConfig } = require('./lib/config');
 
 let getOptions = doc => {
     "use strict"
@@ -36,16 +38,23 @@ let probe = (config) => {
 let main = () => {
     $f.readLocal('docs/usage.md').then(it => {
         let {
-            help, file, num, latex, huntex
+            help, file, num, latex, huntex, dump
         } = getOptions(it);
         if (help) {
             console.log(it)
         } else {
             readConfig({
-                file, latex, num, huntex
+                file, latex, num, huntex, dump
                 })
                 .then(readUnsugared)
-                .then(langtool)
+                .then((config) => {
+                    debug('launching')
+                    return $b.all([langtool(config), atdtool(config)])
+                })
+                .then(([lt, atd]) => {
+                    let errorCollection = lt.concat(atd)
+                    return { file, errorCollection }
+                })
                 .then(csoutput)
         }
     })
