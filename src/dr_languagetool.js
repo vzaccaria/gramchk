@@ -61,9 +61,15 @@ function check(config) {
         let errorCollection = (_.map(parsed.matches.error, processItem));
         debug(JSON.stringify(errorCollection, 0, 4))
         errorCollection = removeSuggestions(errorCollection, ignoredSuggestions)
+
+        if(config.test) {
+            console.log("️✅  Language tool")
+        }
         return addErrors(config, errorCollection);
     }).catch((err) => {
-        debug("Error " + err);
+        if(config.test) {
+            console.log("️❌  Language tool - "+err)
+        }
         return addErrors(config, []);
     })
 }

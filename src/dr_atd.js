@@ -74,9 +74,14 @@ function check(config) {
     }).then((it) => {
         let errorCollection = _.map(it.results.error, processItem, config);
         debug(errorCollection)
+        if(config.test) {
+            console.log("️✅  After the deadline")
+        }
         return addErrors(config, errorCollection);
     }).catch((it) => {
-        debug(it);
+        if(config.test) {
+            console.log("️❌  After the deadline - "+it)
+        }
     })
 }
 

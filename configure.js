@@ -32,7 +32,7 @@ generateProject(_ => {
 
     _.collect("test", _ => {
         _.cmd("make all")
-        _.cmd("./node_modules/.bin/mocha ./lib/test.js")
+        _.cmd("./tests/test.sh");
     })
 
     _.collect("update", _ => {

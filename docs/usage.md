@@ -1,4 +1,5 @@
 Usage:
+    gramchk test [ -c CONFIG ]
     gramchk FILE [ -n NUM ] [ -l ] [ -a ] [ -d N ] [ -x ]
     gramchk ( -h | --help )
 
@@ -9,8 +10,10 @@ Options:
     -x, --huntex            use `huntex` to unsugar latex
     -a, --auto              detect input file
     -d, --dump NUM          dump intermediate phase (1: unsugar)
+    -c, --config CONFIG     configuration file to test
 
 Commands:
+    test                    test connection with servers
 
 Arguments:
     FILE                    file to check

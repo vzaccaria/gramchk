@@ -27,22 +27,26 @@ var path = require("path");
 var _require2 = require("./lib/config");
 
 var readConfig = _require2.readConfig;
+var readConfigFile = _require2.readConfigFile;
 
 var getOptions = function (doc) {
     "use strict";
     var o = $d(doc);
+    debug(o);
     var help = $o("-h", "--help", false, o);
     var num = $o("-h", "--num", 100, o);
     var auto = $o("-a", "--auto", false, o);
     var huntex = $o("-x", "--huntex", false, o);
     var latex = $o("-l", "--latex", false, o);
     var dump = parseInt($o("-d", "--dump", 0, o));
+    var config = $o("-c", "--config", "bogus", o);
+    var test = o.test;
     var file = o.FILE;
     if (auto && path.extname(file) === ".tex") {
         latex = true;
     }
     return {
-        help: help, file: file, num: num, latex: latex, dump: dump, huntex: huntex
+        help: help, file: file, num: num, latex: latex, dump: dump, huntex: huntex, config: config, test: test
     };
 };
 
@@ -61,24 +65,39 @@ var main = function () {
         var latex = _getOptions.latex;
         var huntex = _getOptions.huntex;
         var dump = _getOptions.dump;
+        var config = _getOptions.config;
+        var test = _getOptions.test;
 
         if (help) {
             console.log(it);
         } else {
-            readConfig({
-                file: file, latex: latex, num: num, huntex: huntex, dump: dump
-            }).then(readUnsugared).then(function (config) {
-                debug("launching");
-                return $b.all([langtool(config), atdtool(config)]);
-            }).then(function (_ref) {
-                var _ref2 = _slicedToArray(_ref, 2);
+            if (!test) {
+                readConfig({
+                    file: file, latex: latex, num: num, huntex: huntex, dump: dump
+                }).then(readUnsugared).then(function (config) {
+                    debug("launching");
+                    return $b.all([langtool(config), atdtool(config)]);
+                }).then(function (_ref) {
+                    var _ref2 = _slicedToArray(_ref, 2);
 
-                var lt = _ref2[0];
-                var atd = _ref2[1];
+                    var lt = _ref2[0];
+                    var atd = _ref2[1];
 
-                var errorCollection = lt.concat(atd);
-                return { file: file, errorCollection: errorCollection };
-            }).then(csoutput);
+                    var errorCollection = lt.concat(atd);
+                    return {
+                        file: file, errorCollection: errorCollection
+                    };
+                }).then(csoutput);
+            } else {
+                readConfigFile(config).then(function (c) {
+                    return _.assign(c, {
+                        text: "this is a test",
+                        test: true
+                    });
+                }).then(function (config) {
+                    return $b.all([langtool(config), atdtool(config)]);
+                });
+            }
         }
     });
 };

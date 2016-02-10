@@ -5,11 +5,19 @@ let {
     $fs, $yaml
 } = require('zaccaria-cli');
 
-function readConfig(config) {
-    let rulefile = path.dirname(config.file) + "/.gramchk.yml"
+function readConfigFile(rulefile) {
     return $fs.readFileAsync(rulefile).then((it) => {
         debug(`read rules: ${it}`);
-        return _.assign(config, $yaml(it));
+        return $yaml(it);
+    }).catch( () => {
+        return {}
+    })
+}
+
+function readConfig(config) {
+    let rulefile = path.dirname(config.file) + "/.gramchk.yml"
+    return readConfigFile(rulefile).then((it) => {
+        return _.assign(config, it);
     }).catch(() => {
         return config
     })
@@ -22,5 +30,5 @@ function addErrors(config, errorCollection) {
 }
 
 module.exports = {
-    readConfig, addErrors
+    readConfig, addErrors, readConfigFile
 }

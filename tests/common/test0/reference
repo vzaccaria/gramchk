@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<checkstyle version="4.3">
+    <file name="/Users/zaccaria/development/github/gramchk/tests/common/test0/Conclusions.tex">
+        <error line="3" column="159" severity="error" message="Possible Typo: Possible spelling mistake found (Axis Apes Apia Avis Apps)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="3" column="174" severity="error" message="Possible Typo: Possible spelling mistake found (situation situations)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="3" column="218" severity="error" message="Possible Typo: Did you mean 'it's' (='it is') instead of 'its' (possessive pronoun)? (it's it is)" source="languageTool.IT_IS" />
+        <error line="5" column="10" severity="error" message="Possible Typo: Possible spelling mistake found (analytic analytic s)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="5" column="253" severity="error" message="Possible Typo: Possible spelling mistake found (situation situations)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="7" column="200" severity="error" message="Possible Typo: Possible spelling mistake found (smashup mash up)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="7" column="261" severity="error" message="Possible Typo: Possible spelling mistake found (smashup mash up)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="7" column="268" severity="error" message="Possible Typo: Possible spelling mistake. Did you mean 'schemata', the irregular plural form of the noun 'schema'? (schemata schemes schema schema s)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="7" column="594" severity="error" message="Possible Typo: Possible spelling mistake found (instantiating)" source="languageTool.MORFOLOGIK_RULE_EN_US" />
+        <error line="3" column="61" severity="error" message="empower: Complex Expression" source="ATD" />
+        <error line="3" column="241" severity="error" message="can be: Passive voice" source="ATD" />
+        <error line="4" column="14" severity="error" message="individual managers: Complex Expression" source="ATD" />
+        <error line="4" column="52" severity="error" message="identify: Complex Expression" source="ATD" />
+        <error line="5" column="42" severity="error" message="must be: Passive voice" source="ATD" />
+        <error line="5" column="159" severity="error" message="previous: Complex Expression" source="ATD" />
+        <error line="5" column="122" severity="error" message="are indeed: Passive voice" source="ATD" />
+        <error line="5" column="227" severity="error" message="the creation of: Hidden Verbs" source="ATD" />
+        <error line="7" column="96" severity="error" message="The specification of: Hidden Verbs" source="ATD" />
+        <error line="7" column="177" severity="error" message="the construction of: Hidden Verbs" source="ATD" />
+        <error line="7" column="208" severity="error" message="is performed: Passive voice" source="ATD" />
+        <error line="7" column="491" severity="error" message="actual: Complex Expression" source="ATD" />
+        <error line="7" column="616" severity="error" message="final: Complex Expression" source="ATD" />
+        <error line="7" column="693" severity="error" message="feasible: Complex Expression" source="ATD" />
+        <error line="7" column="676" severity="error" message="to be: Passive voice" source="ATD" />
+        <error line="7" column="721" severity="error" message="the performance of: Hidden Verbs" source="ATD" />
+        <error line="9" column="29" severity="error" message="the usability of: Hidden Verbs" source="ATD" />
+        <error line="9" column="86" severity="error" message="is perceived: Passive voice" source="ATD" />
+        <error line="9" column="29" severity="error" message="the usability of: Hidden Verbs" source="ATD" />
+        <error line="9" column="168" severity="error" message="are considered: Passive voice" source="ATD" />
+        <error line="7" column="616" severity="error" message="final: Complex Expression" source="ATD" />
+        <error line="5" column="159" severity="error" message="previous: Complex Expression" source="ATD" />
+        <error line="9" column="497" severity="error" message="for example: Complex Expression" source="ATD" />
+        <error line="9" column="734" severity="error" message="is going to be: Passive voice" source="ATD" />
+        <error line="10" column="25" severity="error" message="therefore: Complex Expression" source="ATD" />
+        <error line="10" column="55" severity="error" message="the implementation of: Hidden Verbs" source="ATD" />
+    </file>
+</checkstyle>
