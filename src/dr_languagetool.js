@@ -58,6 +58,8 @@ function check(config) {
         return xmlparse(res.text)
     }).then((parsed) => {
         debug(`Ignoring suggestions ${ignoredSuggestions}`);
+        debug(`received the following data`);
+        debug(parsed.matches.error);
         let errorCollection = (_.map(parsed.matches.error, processItem));
         debug(JSON.stringify(errorCollection, 0, 4))
         errorCollection = removeSuggestions(errorCollection, ignoredSuggestions)
