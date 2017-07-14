@@ -1,105 +1,73 @@
 #!/usr/bin/env node
-"use strict";
-
-var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-
 /* eslint quotes: [0], strict: [0] */
+/* global require, __filename */
 
-var _require = require("zaccaria-cli");
+const prog = require("caporal");
+const process = require("process");
+const $b = require("bluebird");
+const _ = require("lodash");
+let langtool = require("./src/dr_languagetool").check;
+let atdtool = require("./src/dr_atd").check;
+let csoutput = require("./src/checkstyle");
+let debug = require("debug")(__filename);
+let readUnsugared = require("./src/unsugar");
+let path = require("path");
+let {
+  readConfig,
+} = require("./src/config");
 
-var $d = _require.$d;
-var $o = _require.$o;
-var $f = _require.$f;
-var $r = _require.$r;
-var $fs = _require.$fs;
-var _ = _require._;
-var $b
-// $r.stdin() -> Promise  ;; to read from stdin
-= _require.$b;
-
-var langtool = require("./lib/dr_languagetool").check;
-var atdtool = require("./lib/dr_atd").check;
-var csoutput = require("./lib/checkstyle");
-var debug = require("debug")(__filename);
-var readUnsugared = require("./lib/unsugar");
-var path = require("path");
-
-var _require2 = require("./lib/config");
-
-var readConfig = _require2.readConfig;
-var readConfigFile = _require2.readConfigFile;
-
-var getOptions = function (doc) {
-    "use strict";
-    var o = $d(doc);
-    debug(o);
-    var help = $o("-h", "--help", false, o);
-    var num = $o("-h", "--num", 100, o);
-    var auto = $o("-a", "--auto", false, o);
-    var huntex = $o("-x", "--huntex", false, o);
-    var latex = $o("-l", "--latex", false, o);
-    var dump = parseInt($o("-d", "--dump", 0, o));
-    var config = $o("-c", "--config", "bogus", o);
-    var test = o.test;
-    var file = o.FILE;
-    if (auto && path.extname(file) === ".tex") {
-        latex = true;
+prog
+  .version("1.0.0")
+  .description("Checks grammar by using a host of tools")
+  .command("check", "Checks <file>")
+  .argument("<file>", "Top level file or directory")
+  .option("--maxerr <num>", "Max <num> of errors", prog.INT, 100)
+  .option(
+    "--auto",
+    "Determine if it is a latex file from extension",
+    prog.BOOL,
+    true
+  )
+  .option("--latex", "Is it a latex file", prog.BOOL, false)
+  .option("--huntex", "Use Huntex to remove latex tags", prog.BOOL, true)
+  .option("--config <configfile>", "Use explicit <configfile>")
+  .action(function(args, options) {
+    if (options.auto) {
+      if (path.extname(args.file) === ".tex") {
+        options.latex = true;
+      }
     }
-    return {
-        help: help, file: file, num: num, latex: latex, dump: dump, huntex: huntex, config: config, test: test
-    };
-};
+    readConfig({
+      file: args.file,
+      latex: options.latex,
+      num: options.num,
+      huntex: options.huntex
+    })
+      .then(readUnsugared)
+      .then(config => {
+        return $b.all([langtool(config), atdtool(config)]);
+      })
+      .then(([lt, atd]) => {
+        let errorCollection = lt.concat(atd);
+        return {
+          file: args.file,
+          errorCollection
+        };
+      })
+      .then(csoutput);
+  })
+  .command("test", "Test if servers and commands are available")
+  .action(function() {
+    readConfig({})
+      .then(c => {
+        return _.assign(c, {
+          text: "this is a test",
+          test: true
+        });
+      })
+      .then(config => {
+        return $b.all([langtool(config), atdtool(config)]);
+      });
+  });
 
-var probe = function (config) {
-    console.log(config.text);
-    return config;
-};
-
-var main = function () {
-    $f.readLocal("docs/usage.md").then(function (it) {
-        var _getOptions = getOptions(it);
-
-        var help = _getOptions.help;
-        var file = _getOptions.file;
-        var num = _getOptions.num;
-        var latex = _getOptions.latex;
-        var huntex = _getOptions.huntex;
-        var dump = _getOptions.dump;
-        var config = _getOptions.config;
-        var test = _getOptions.test;
-
-        if (help) {
-            console.log(it);
-        } else {
-            if (!test) {
-                readConfig({
-                    file: file, latex: latex, num: num, huntex: huntex, dump: dump
-                }).then(readUnsugared).then(function (config) {
-                    debug("launching");
-                    return $b.all([langtool(config), atdtool(config)]);
-                }).then(function (_ref) {
-                    var _ref2 = _slicedToArray(_ref, 2);
-
-                    var lt = _ref2[0];
-                    var atd = _ref2[1];
-
-                    var errorCollection = lt.concat(atd);
-                    return {
-                        file: file, errorCollection: errorCollection
-                    };
-                }).then(csoutput);
-            } else {
-                readConfigFile(config).then(function (c) {
-                    return _.assign(c, {
-                        text: "this is a test",
-                        test: true
-                    });
-                }).then(function (config) {
-                    return $b.all([langtool(config), atdtool(config)]);
-                });
-            }
-        }
-    });
-};
-
-main();
+prog.parse(process.argv);

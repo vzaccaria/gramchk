@@ -1,6 +1,6 @@
 {
   "name": "gramchk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A hub of grammarchecks at your disposal.",
   "main": "index.js",
   "bin": {
@@ -21,27 +21,16 @@
   },
   "homepage": "https://github.com/vzaccaria/gramchk",
   "dependencies": {
-    "atd-api": "^0.2.3",
-    "bluebird": "^3.1.1",
-    "debug": "^2.2.0",
-    "diff-files": "^0.1.0",
-    "find-line-column": "^0.5.2",
-    "superagent": "^1.6.1",
-    "superagent-promise": "^1.1.0",
-    "urlencode": "^1.1.0",
-    "xml2js": "^0.4.15",
-    "zaccaria-cli": "^0.2.0"
-  },
-  "devDependencies": {
-    "diy-build": "^1.0.8",
-    "babel": "^4.7.16",
-    "shelljs": "*",
-    "xyz": "*",
-    "mocha": "*",
-    "chai": "*",
-    "chai-as-promised": "*",
-    "mustache": "~2.1.2",
-    "stupid-replace": "~0.0.3",
-    "git-hist": "*"
+    "bluebird": "3.5.0",
+    "caporal": "0.7.0",
+    "diy-build": "1.0.9",
+    "find-config": "1.0.0",
+    "find-line-column": "0.5.2",
+    "git-hist": "0.2.0",
+    "mz": "^2.6.0",
+    "superagent": "3.5.2",
+    "superagent-promise": "1.1.0",
+    "urlencode": "1.1.0",
+    "xml2js": "0.4.17"
   }
 }

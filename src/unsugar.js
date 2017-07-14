@@ -1,45 +1,48 @@
-let {
-    $s, $fs, _
-} = require('zaccaria-cli')
+/* global require, __filename */
 
 let absolutelyAvoidTheseEnvs = [
-    "title",
-    "author",
-    "authorrunning",
-    "tocauthor",
-    "email",
-    "institute",
-    "keywords",
-    "thebibliography"
+  "title",
+  "author",
+  "authorrunning",
+  "tocauthor",
+  "email",
+  "institute",
+  "keywords",
+  "thebibliography"
 ].join(",");
 
-let debug = require('debug')(__filename);
+let debug = require("debug")(__filename);
+const _ = require("lodash");
+const $fs = require("mz/fs");
+let exec = require("mz/child_process").exec;
 
 function readUnsugared(config) {
-    let file = config.file
-    let cb = (text) => {
-        if(config.dump) {
-            console.log(text)
-        }
-        return _.assign(config, {
-            text
-        })
+  let file = config.file;
+  let cb = text => {
+    if (config.dump) {
+      console.log(text);
     }
-    if (!config.latex) {
-        return $fs.readFileAsync(file, 'utf8').then(cb)
+    return _.assign(config, {
+      text
+    });
+  };
+  if (!config.latex) {
+    return $fs.readFile(file, "utf8").then(cb);
+  } else {
+    if (!config.huntex) {
+      let detexOptions = _.get(config, "detexOptions", "");
+      return exec(
+        `detex -n -s -e ${absolutelyAvoidTheseEnvs} ${detexOptions} ${file}`,
+        {
+          silent: true
+        }
+      ).then(cb);
     } else {
-        if (!config.huntex) {
-            let detexOptions = _.get(config, "detexOptions", "");
-            return $s.execAsync(`detex -n -s -e ${absolutelyAvoidTheseEnvs} ${detexOptions} ${file}`, {
-                silent: true
-            }).then(cb)
-        } else {
-            return $s.execAsync(`huntex-exe ${file}`, {
-                silent: true
-            }).then(cb);
-
-        }
+      return exec(`huntex-exe ${file}`, {
+        silent: true
+      }).then(cb);
     }
+  }
 }
 
-module.exports = readUnsugared
+module.exports = readUnsugared;
