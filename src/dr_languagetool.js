@@ -1,38 +1,26 @@
+/* global require, module, __filename */
 let agent = require("./agent");
 let _ = require("lodash");
 
 let debug = require("debug")(__filename);
-let path = require("path");
-let {
-  stripMarkdown
-} = require("./strip");
+let { stripMarkdown } = require("./strip");
 
 let { addErrors } = require("./config");
 
 let urlencode = require("urlencode");
 
-let {
-  xmlparse
-} = require("./xml");
+let flc = require("find-line-column");
 
 function removeSuggestions(errors, sugArray) {
   return _.filter(errors, e => !_.includes(sugArray, e.suggestion));
 }
 
 function processItem(i) {
-  i = i.$;
-  let {
-    fromx,
-    fromy,
-    category,
-    msg,
-    replacements
-  } = i;
-  replacements = _.take(replacements.split("#"), 5);
-  let suggestion = replacements[0];
-  replacements = replacements.join(" ");
-  let editormessage = `${category}: ${msg} (${replacements})`;
-  let source = `languageTool.${i.ruleId}`;
+  let { message, replacements, rule, offset } = i;
+  let suggestion = replacements[0].value;
+  let editormessage = `${rule.category.name}: ${message} (${suggestion})`;
+  let source = `languageTool.${rule.id}`;
+  let { line: fromx, col: fromy } = flc(this.text, offset);
   return {
     fromx,
     fromy,
@@ -43,7 +31,7 @@ function processItem(i) {
 }
 
 function check(config) {
-  let url = _.get(config, "languagetool.url", "http://localhost:8081");
+  let url = _.get(config, "languagetool.url", "http://localhost:8081/v2/check");
   let disabled = _.get(config, "languagetool.disabled", [
     "WHITESPACE_RULE",
     "COMMA_PARENTHESIS_WHITESPACE"
@@ -59,19 +47,20 @@ function check(config) {
     .post(url)
     .send("language=" + language)
     .send("text=" + text)
-    .send("disabled=" + disabled.join(","))
+    .send("disabledRules=" + disabled.join(","))
     .end()
     .then(res => {
-      return xmlparse(res.text);
+      return JSON.parse(res.text);
     })
     .then(parsed => {
       debug(`Ignoring suggestions ${ignoredSuggestions}`);
       debug(`received the following data`);
-      debug(parsed.matches.error);
-      let errorCollection = _.map(parsed.matches.error, processItem);
-      debug(JSON.stringify(errorCollection, 0, 4));
+      debug(parsed.matches);
+      debug(config);
+      let errorCollection = _.map(parsed.matches, _.bind(processItem, config));
       errorCollection = removeSuggestions(errorCollection, ignoredSuggestions);
 
+      debug(errorCollection);
       if (config.test) {
         console.log("️✅  Language tool");
       }

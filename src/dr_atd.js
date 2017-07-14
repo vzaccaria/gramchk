@@ -1,31 +1,21 @@
 let agent = require("./agent");
 let _ = require("lodash");
-let {
-  addErrors
-} = require("./config");
+let { addErrors } = require("./config");
 
 let debug = require("debug")(__filename);
-let path = require("path");
 
 let urlencode = require("urlencode");
 
-let {
-  xmlparse
-} = require("./xml");
+let { xmlparse } = require("./xml");
 
-let uid = require("uid");
 let flc = require("find-line-column");
 
 function getIndex(text, string) {
   let pos = text.indexOf(string);
   if (pos >= 0) {
     let success = true;
-    let {
-      line: fromy,
-      col: fromx
-    } = flc(text, pos);
+    let { line: fromy, col: fromx } = flc(text, pos);
     fromy = fromy - 1;
-    fromx = fromx;
     return {
       success,
       fromx,
@@ -42,11 +32,7 @@ function processItem(i) {
   debug(i);
   let stringToBeFound = i.string[0];
   let editormessage = `${stringToBeFound}: ${i.description[0]}`;
-  let {
-    success,
-    fromx,
-    fromy
-  } = getIndex(this.text, stringToBeFound);
+  let { success, fromx, fromy } = getIndex(this.text, stringToBeFound);
   let source = `ATD`;
   let suggestion = `No suggestions`;
   if (!success) {
@@ -79,7 +65,10 @@ function check(config) {
       return xmlparse(it.text);
     })
     .then(it => {
-      let errorCollection = _.map(it.results.error, processItem, config);
+      let errorCollection = _.map(
+        it.results.error,
+        _.bind(processItem, config)
+      );
       debug(errorCollection);
       if (config.test) {
         console.log("️✅  After the deadline");
