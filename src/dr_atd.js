@@ -58,28 +58,33 @@ function checkGrammar(url, text) {
 
 function check(config) {
   debug(config);
-  let url = _.get(config, "atd.url", "http://127.0.0.1:1049");
-  let text = urlencode(config.text);
-  return checkGrammar(url, text)
-    .then(it => {
-      return xmlparse(it.text);
-    })
-    .then(it => {
-      let errorCollection = _.map(
-        it.results.error,
-        _.bind(processItem, config)
-      );
-      debug(errorCollection);
-      if (config.test) {
-        console.log("️✅  After the deadline");
-      }
-      return addErrors(config, errorCollection);
-    })
-    .catch(it => {
-      if (config.test) {
-        console.log("️❌  After the deadline - " + it);
-      }
-    });
+  let disabled = _.get(config, "atd.disabled", false);
+  if (!disabled) {
+    let url = _.get(config, "atd.url", "http://127.0.0.1:1049");
+    let text = urlencode(config.text);
+    return checkGrammar(url, text)
+      .then(it => {
+        return xmlparse(it.text);
+      })
+      .then(it => {
+        let errorCollection = _.map(
+          it.results.error,
+          _.bind(processItem, config)
+        );
+        debug(errorCollection);
+        if (config.test) {
+          console.log("️✅  After the deadline");
+        }
+        return addErrors(config, errorCollection);
+      })
+      .catch(it => {
+        if (config.test) {
+          console.log("️❌  After the deadline - " + it);
+        }
+      });
+  } else {
+    return [];
+  }
 }
 
 function testIt() {

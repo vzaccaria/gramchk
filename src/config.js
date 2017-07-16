@@ -7,7 +7,7 @@ let { read } = require("find-config");
 let $b = require("bluebird");
 
 function readConfig(config) {
-  let rulefile = "/.gramchk.yml";
+  let rulefile = _.get(config, "rulefile", "/.gramchk.yml");
   let data;
   if (!_.isUndefined(config.file)) {
     data = read(rulefile, { cwd: path.dirname(config.file) });

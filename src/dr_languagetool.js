@@ -16,11 +16,17 @@ function removeSuggestions(errors, sugArray) {
 }
 
 function processItem(i) {
+  debug(i);
   let { message, replacements, rule, offset } = i;
-  let suggestion = replacements[0].value;
+  let suggestion = "no suggestion";
+  if (!_.isUndefined(replacements[0])) {
+    suggestion = replacements[0].value;
+  }
+
   let editormessage = `${rule.category.name}: ${message} (${suggestion})`;
   let source = `languageTool.${rule.id}`;
-  let { line: fromx, col: fromy } = flc(this.text, offset);
+  let { line: fromy, col: fromx } = flc(this.text, offset);
+  fromy = fromy - 1;
   return {
     fromx,
     fromy,
@@ -32,7 +38,7 @@ function processItem(i) {
 
 function check(config) {
   let url = _.get(config, "languagetool.url", "http://localhost:8081/v2/check");
-  let disabled = _.get(config, "languagetool.disabled", [
+  let disabled = _.get(config, "languagetool.disabledrules", [
     "WHITESPACE_RULE",
     "COMMA_PARENTHESIS_WHITESPACE"
   ]);
@@ -70,6 +76,7 @@ function check(config) {
       if (config.test) {
         console.log("️❌  Language tool - " + err);
       }
+      debug(`Error ${err}`);
       return addErrors(config, []);
     });
 }

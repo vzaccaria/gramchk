@@ -13,7 +13,7 @@ let debug = require("debug")(__filename);
 let readUnsugared = require("./src/unsugar");
 let path = require("path");
 let {
-  readConfig,
+  readConfig
 } = require("./src/config");
 
 prog
@@ -28,19 +28,26 @@ prog
     prog.BOOL,
     true
   )
+  .option("--detex", "Use detex instead of huntex", prog.BOOL, false)
   .option("--latex", "Is it a latex file", prog.BOOL, false)
-  .option("--huntex", "Use Huntex to remove latex tags", prog.BOOL, true)
-  .option("--config <configfile>", "Use explicit <configfile>")
+  .option("--rulefile <file>", "Use explicit rulefile")
   .action(function(args, options) {
     if (options.auto) {
       if (path.extname(args.file) === ".tex") {
         options.latex = true;
       }
     }
+    if (options.latex) {
+      if (options.detex) {
+        options.huntex = false;
+      } else {
+        options.huntex = true;
+      }
+    }
     readConfig({
       file: args.file,
       latex: options.latex,
-      num: options.num,
+      num: options.maxerr,
       huntex: options.huntex
     })
       .then(readUnsugared)
@@ -49,6 +56,7 @@ prog
       })
       .then(([lt, atd]) => {
         let errorCollection = lt.concat(atd);
+        debug(lt);
         return {
           file: args.file,
           errorCollection

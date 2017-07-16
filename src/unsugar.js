@@ -23,7 +23,7 @@ function readUnsugared(config) {
       console.log(text);
     }
     return _.assign(config, {
-      text
+      text: text
     });
   };
   if (!config.latex) {
@@ -36,11 +36,15 @@ function readUnsugared(config) {
         {
           silent: true
         }
-      ).then(cb);
+      )
+        .then(t => t[0])
+        .then(cb);
     } else {
       return exec(`huntex-exe ${file}`, {
         silent: true
-      }).then(cb);
+      })
+        .then(t => t[0])
+        .then(cb);
     }
   }
 }
