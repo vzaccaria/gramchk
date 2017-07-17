@@ -29,12 +29,13 @@ function getIndex(text, string) {
 }
 
 function processItem(i) {
-  debug(i);
   let stringToBeFound = i.string[0];
-  let editormessage = `${stringToBeFound}: ${i.description[0]}`;
+  let editormessage = `${i.precontext[0]} '${stringToBeFound}': ${i
+    .description[0]} --- ${i.url[0]}`;
   let { success, fromx, fromy } = getIndex(this.text, stringToBeFound);
   let source = `ATD`;
-  let suggestion = `No suggestions`;
+  let sulist = _.get(i, "suggestions[0].option", []);
+  let suggestion = _.join(sulist, ", ");
   if (!success) {
     fromx = 0;
     fromy = 0;
@@ -57,7 +58,6 @@ function checkGrammar(url, text) {
 }
 
 function check(config) {
-  debug(config);
   let disabled = _.get(config, "atd.disabled", false);
   if (!disabled) {
     let url = _.get(config, "atd.url", "http://127.0.0.1:1049");
@@ -80,6 +80,8 @@ function check(config) {
       .catch(it => {
         if (config.test) {
           console.log("️❌  After the deadline - " + it);
+        } else {
+          debug(it);
         }
       });
   } else {
