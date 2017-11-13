@@ -27,6 +27,7 @@
     "find-config": "1.0.0",
     "find-line-column": "0.5.2",
     "git-hist": "0.2.0",
+    "js-yaml": "3.10.0",
     "lodash": "4.17.4",
     "mz": "^2.6.0",
     "superagent": "3.5.2",
