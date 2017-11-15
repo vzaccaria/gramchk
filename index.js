@@ -12,9 +12,7 @@ let csoutput = require("./src/checkstyle");
 let debug = require("debug")(__filename);
 let readUnsugared = require("./src/unsugar");
 let path = require("path");
-let {
-  readConfig
-} = require("./src/config");
+let { readConfig } = require("./src/config");
 
 prog
   .version("1.0.0")
@@ -48,7 +46,8 @@ prog
       file: args.file,
       latex: options.latex,
       num: options.maxerr,
-      huntex: options.huntex
+      huntex: options.huntex,
+      rulefile: options.rulefile
     })
       .then(readUnsugared)
       .then(config => {

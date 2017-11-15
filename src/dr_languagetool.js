@@ -3,6 +3,7 @@ let agent = require("./agent");
 let _ = require("lodash");
 
 let debug = require("debug")(__filename);
+let debugConfig = require("debug")("grmcheck_config");
 let { stripMarkdown } = require("./strip");
 
 let { addErrors } = require("./config");
@@ -12,11 +13,21 @@ let urlencode = require("urlencode");
 let flc = require("find-line-column");
 
 function removeSuggestions(errors, sugArray) {
-  return _.filter(errors, e => !_.includes(sugArray, e.suggestion));
+  debugConfig("Removing suggestions");
+  debugConfig(sugArray);
+  return _.filter(errors, e => {
+    debugConfig(`check ${e.suggestion} - ${JSON.stringify(e)}`);
+    if (_.includes(sugArray, e.suggestion)) {
+      debugConfig(`rm ${e.suggestion} - ${e}`);
+      return false;
+    } else {
+      return true;
+    }
+  });
 }
 
 function processItem(i) {
-  debug(i);
+  debugConfig(i);
   let { message, replacements, rule, offset } = i;
   let suggestion = "no suggestion";
   if (!_.isUndefined(replacements[0])) {

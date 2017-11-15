@@ -4,22 +4,34 @@ let path = require("path");
 let _ = require("lodash");
 let $yaml = require("js-yaml");
 let { read } = require("find-config");
+let { readFile } = require("mz/fs");
 let $b = require("bluebird");
+let debugConfig = require("debug")("grmcheck_config");
 
 function readConfig(config) {
-  let rulefile = _.get(config, "rulefile", "/.gramchk.yml");
+  debugConfig("Original config");
+  debugConfig(config);
   let data;
-  if (!_.isUndefined(config.file)) {
+  if (!_.isUndefined(config.file) && _.isUndefined(config.rulefile)) {
+    let rulefile = _.get(config, "rulefile", "/.gramchk.yml");
+    debugConfig(`Using rulefile ${rulefile}`);
     data = read(rulefile, { cwd: path.dirname(config.file) });
+    debugConfig(`Read-data ${data}`);
+    data = $yaml.safeLoad(data);
+    debugConfig(`Interpreted-data ${data}`);
+    return $b.resolve(_.assign(config, data));
   } else {
-    data = read(rulefile);
+    return readFile(config.rulefile).then(data => {
+      debugConfig(`Read-data ${data}`);
+      data = $yaml.safeLoad(data);
+      debugConfig(`Interpreted-data ${data}`);
+      return $b.resolve(_.assign(config, data));
+    });
   }
-  data = $yaml.safeLoad(data);
-  return $b.resolve(_.assign(config, data));
 }
 
 function addErrors(config, errorCollection) {
-  debug(errorCollection);
+  // debug(errorCollection);
   errorCollection = _.take(errorCollection, config.num);
   return errorCollection;
 }
