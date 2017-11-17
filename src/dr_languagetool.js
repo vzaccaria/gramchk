@@ -4,7 +4,6 @@ let _ = require("lodash");
 
 let debug = require("debug")(__filename);
 let debugConfig = require("debug")("grmcheck_config");
-let { stripMarkdown } = require("./strip");
 
 let { addErrors } = require("./config");
 
@@ -29,7 +28,7 @@ function removeSuggestions(errors, sugArray) {
 function processItem(i) {
   debugConfig(i);
   let { message, replacements, rule, offset } = i;
-  let suggestion = "no suggestion";
+  let suggestion = "?";
   if (!_.isUndefined(replacements[0])) {
     suggestion = replacements[0].value;
   }
@@ -58,7 +57,6 @@ function check(config) {
   let text = config.text;
   let language = _.get(config, "language", "en-us");
 
-  text = stripMarkdown(text);
   text = urlencode(text);
   return agent
     .post(url)

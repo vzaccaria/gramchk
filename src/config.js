@@ -29,7 +29,7 @@ function readConfig(config) {
 
 function addErrors(config, errorCollection) {
   // debug(errorCollection);
-  errorCollection = _.take(errorCollection, config.num);
+  errorCollection = _.take(errorCollection, config.maxerr);
   return errorCollection;
 }
 

@@ -8,6 +8,7 @@ const $b = require("bluebird");
 const _ = require("lodash");
 let langtool = require("./src/dr_languagetool").check;
 let atdtool = require("./src/dr_atd").check;
+let writegoodtool = require("./src/dr_writegood").check;
 let csoutput = require("./src/checkstyle");
 let debug = require("debug")(__filename);
 let readUnsugared = require("./src/unsugar");
@@ -43,20 +44,18 @@ prog
         options.huntex = true;
       }
     }
-    readConfig({
-      file: args.file,
-      latex: options.latex,
-      num: options.maxerr,
-      huntex: options.huntex,
-      rulefile: options.rulefile
-    })
+    options.file = args.file;
+    readConfig(options)
       .then(readUnsugared)
       .then(config => {
-        return $b.all([langtool(config), atdtool(config)]);
+        return $b.all([
+          langtool(config),
+          atdtool(config),
+          writegoodtool(config)
+        ]);
       })
-      .then(([lt, atd]) => {
-        let errorCollection = lt.concat(atd);
-        debug(lt);
+      .then(res => {
+        let errorCollection = _.flattenDeep(res);
         return {
           file: args.file,
           errorCollection

@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/vzaccaria/gramchk",
   "dependencies": {
+    "alex": "5.1.0",
     "bluebird": "3.5.0",
     "caporal": "0.7.0",
     "diy-build": "1.0.9",
@@ -30,14 +31,18 @@
     "js-yaml": "3.10.0",
     "lodash": "4.17.4",
     "mz": "2.7.0",
+    "parse-latin": "4.1.0",
     "remark-parse": "4.0.0",
     "remark-retext": "3.1.0",
+    "retext-english": "3.0.0",
     "retext-stringify": "2.0.0",
     "superagent": "3.5.2",
     "superagent-promise": "1.1.0",
     "to-vfile": "2.1.2",
     "unified": "6.1.6",
+    "unist-util-inspect": "4.1.1",
     "urlencode": "1.1.0",
+    "write-good": "0.11.3",
     "xml2js": "0.4.17"
   }
 }

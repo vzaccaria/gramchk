@@ -15,12 +15,8 @@ let debug = require("debug")(__filename);
 const _ = require("lodash");
 const $fs = require("mz/fs");
 let exec = require("mz/child_process").exec;
-let vfile = require("to-vfile");
-let unified = require("unified");
-let parse = require("remark-parse");
-let remark2retext = require("remark-retext");
-const Promise = require("bluebird");
-let stringify = require("retext-stringify");
+let Promise = require("bluebird");
+let { stripMarkdown } = require("./strip");
 
 let returnAsText = (config, text) => {
   if (config.dump) {
@@ -32,14 +28,11 @@ let returnAsText = (config, text) => {
 };
 
 let readUnsugaredMarkdown = (config, file) => {
-  let processor = unified()
-    .use(parse)
-    .use(remark2retext);
-
-  return new Promise((resolve, reject) => {
-    file = new vfile(file);
-    let tree = processor.parse(file);
-    processor.runSync(tree, file);
+  return $fs.readFile(file, "utf8").then(text => {
+    return new Promise(resolve => {
+      text = stripMarkdown(text);
+      resolve(text);
+    });
   });
 };
 
@@ -58,18 +51,18 @@ let readUnsugaredTex = (config, file) => {
       silent: true
     });
   }
-  rtex_p.then(t => t[0]).then(_.curry(returnAsText)(config));
+  return rtex_p.then(t => t[0]);
 };
 
 function readUnsugared(config) {
   let file = config.file;
+  let unsugared_p;
   if (!config.latex) {
-    return readUnsugaredMarkdown(config, file).then(
-      _.curry(returnAsText)(config)
-    );
+    unsugared_p = readUnsugaredMarkdown(config, file);
   } else {
-    return readUnsugaredTex(config, file);
+    unsugared_p = readUnsugaredTex(config, file);
   }
+  return unsugared_p.then(_.curry(returnAsText)(config));
 }
 
 module.exports = readUnsugared;
