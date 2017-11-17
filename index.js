@@ -9,6 +9,7 @@ const _ = require("lodash");
 let langtool = require("./src/dr_languagetool").check;
 let atdtool = require("./src/dr_atd").check;
 let writegoodtool = require("./src/dr_writegood").check;
+let proselinttool = require("./src/dr_proselint").check;
 let csoutput = require("./src/checkstyle");
 let debug = require("debug")(__filename);
 let readUnsugared = require("./src/unsugar");
@@ -51,7 +52,8 @@ prog
         return $b.all([
           langtool(config),
           atdtool(config),
-          writegoodtool(config)
+          writegoodtool(config),
+          proselinttool(config)
         ]);
       })
       .then(res => {

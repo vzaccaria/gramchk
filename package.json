@@ -38,6 +38,7 @@
     "retext-stringify": "2.0.0",
     "superagent": "3.5.2",
     "superagent-promise": "1.1.0",
+    "tmp-promise": "1.0.4",
     "to-vfile": "2.1.2",
     "unified": "6.1.6",
     "unist-util-inspect": "4.1.1",
