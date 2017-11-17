@@ -30,8 +30,13 @@
     "js-yaml": "3.10.0",
     "lodash": "4.17.4",
     "mz": "2.7.0",
+    "remark-parse": "4.0.0",
+    "remark-retext": "3.1.0",
+    "retext-stringify": "2.0.0",
     "superagent": "3.5.2",
     "superagent-promise": "1.1.0",
+    "to-vfile": "2.1.2",
+    "unified": "6.1.6",
     "urlencode": "1.1.0",
     "xml2js": "0.4.17"
   }

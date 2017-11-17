@@ -24,11 +24,12 @@ prog
     "--auto",
     "Determine if it is a latex file from extension",
     prog.BOOL,
-    true
+    false
   )
   .option("--detex", "Use detex instead of huntex", prog.BOOL, false)
   .option("--latex", "Is it a latex file", prog.BOOL, false)
   .option("--rulefile <file>", "Use explicit rulefile")
+  .option("--dump", "Dump unsugared", prog.BOOL, false)
   .action(function(args, options) {
     if (options.auto) {
       if (path.extname(args.file) === ".tex") {
