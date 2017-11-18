@@ -3,21 +3,16 @@ let agent = require("./agent");
 let _ = require("lodash");
 
 let debug = require("debug")(__filename);
-let debugConfig = require("debug")("grmcheck_config");
 
-let { addErrors } = require("./config");
+let { decimateErrors } = require("./config");
 
 let urlencode = require("urlencode");
 
 let flc = require("find-line-column");
 
 function removeSuggestions(errors, sugArray) {
-  debugConfig("Removing suggestions");
-  debugConfig(sugArray);
   return _.filter(errors, e => {
-    debugConfig(`check ${e.suggestion} - ${JSON.stringify(e)}`);
     if (_.includes(sugArray, e.suggestion)) {
-      debugConfig(`rm ${e.suggestion} - ${e}`);
       return false;
     } else {
       return true;
@@ -26,7 +21,6 @@ function removeSuggestions(errors, sugArray) {
 }
 
 function processItem(i) {
-  debugConfig(i);
   let { message, replacements, rule, offset } = i;
   let suggestion = "?";
   if (!_.isUndefined(replacements[0])) {
@@ -46,23 +40,28 @@ function processItem(i) {
   };
 }
 
-function check(config) {
-  let url = _.get(config, "languagetool.url", "http://localhost:8081/v2/check");
-  let disabled = _.get(config, "languagetool.disabledrules", [
-    "WHITESPACE_RULE",
-    "COMMA_PARENTHESIS_WHITESPACE"
-  ]);
-  debug(config);
-  let ignoredSuggestions = _.get(config, "languagetool.ignoredSuggestions", []);
-  let text = config.text;
-  let language = _.get(config, "language", "en-us");
+let defaultConfig = {
+  languagetool: {
+    url: "http://localhost:8081/v2/check",
+    disabledRules: ["WHITESPACE_RULE", "COMMA_PARENTHESIS_WHITESPACE"],
+    ignoredSuggestions: [],
+    language: "en-us"
+  }
+};
 
+function _check(_config, text) {
+  let {
+    url,
+    disabledRules,
+    ignoredSuggestions,
+    language
+  } = _config.languagetool;
   text = urlencode(text);
   return agent
     .post(url)
     .send("language=" + language)
     .send("text=" + text)
-    .send("disabledRules=" + disabled.join(","))
+    .send("disabledRules=" + disabledRules.join(","))
     .end()
     .then(res => {
       return JSON.parse(res.text);
@@ -71,25 +70,37 @@ function check(config) {
       debug(`Ignoring suggestions ${ignoredSuggestions}`);
       debug(`received the following data`);
       debug(parsed.matches);
-      debug(config);
-      let errorCollection = _.map(parsed.matches, _.bind(processItem, config));
-      errorCollection = removeSuggestions(errorCollection, ignoredSuggestions);
-
-      debug(errorCollection);
-      if (config.test) {
-        console.log("️✅  Language tool");
-      }
-      return addErrors(config, errorCollection);
-    })
-    .catch(err => {
-      if (config.test) {
-        console.log("️❌  Language tool - " + err);
-      }
-      debug(`Error ${err}`);
-      return addErrors(config, []);
+      return _.map(parsed.matches, _.bind(processItem, _config));
     });
 }
 
+function test(config, logger) {
+  config = _.merge({}, defaultConfig, config);
+  let text = "This is a test.";
+  logger.debug(JSON.stringify({ languagetool: config.languagetool }, 0, 4));
+  _check(config, text).then(
+    () => console.log("️✅  Language tool"),
+    err => console.log("️❌  Language tool - " + err)
+  );
+}
+
+function check(config) {
+  config = _.merge({}, defaultConfig, config);
+  return _check(config, config.text)
+    .then(errorCollection => {
+      return decimateErrors(
+        config,
+        removeSuggestions(
+          errorCollection,
+          config.languagetool.ignoredSuggestions
+        )
+      );
+    })
+    .catch(() => []);
+}
+
 module.exports = {
-  check
+  check,
+  test,
+  defaultConfig
 };

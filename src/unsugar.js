@@ -21,6 +21,7 @@ let { stripMarkdown } = require("./strip");
 let returnAsText = (config, text) => {
   if (config.dump) {
     console.log(text);
+    process.exit(0);
   }
   return _.assign(config, {
     text: text

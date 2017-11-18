@@ -27,6 +27,12 @@ function readConfig(config) {
   }
 }
 
+function decimateErrors(config, errorCollection) {
+  // debug(errorCollection);
+  errorCollection = _.take(errorCollection, config.maxerr);
+  return errorCollection;
+}
+
 function addErrors(config, errorCollection) {
   // debug(errorCollection);
   errorCollection = _.take(errorCollection, config.maxerr);
@@ -35,5 +41,6 @@ function addErrors(config, errorCollection) {
 
 module.exports = {
   readConfig,
-  addErrors
+  addErrors,
+  decimateErrors
 };

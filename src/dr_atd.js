@@ -1,6 +1,6 @@
 let agent = require("./agent");
 let _ = require("lodash");
-let { addErrors } = require("./config");
+let { addErrors, decimateErrors } = require("./config");
 
 let debug = require("debug")(__filename);
 
@@ -57,45 +57,45 @@ function checkGrammar(url, text) {
     .end();
 }
 
-function check(config) {
-  let disabled = _.get(config, "atd.disabled", false);
-  if (!disabled) {
-    let url = _.get(config, "atd.url", "http://127.0.0.1:1049");
-    let text = urlencode(config.text);
-    return checkGrammar(url, text)
-      .then(it => {
-        return xmlparse(it.text);
-      })
-      .then(it => {
-        let errorCollection = _.map(
-          it.results.error,
-          _.bind(processItem, config)
-        );
-        debug(errorCollection);
-        if (config.test) {
-          console.log("️✅  After the deadline");
-        }
-        return addErrors(config, errorCollection);
-      })
-      .catch(it => {
-        if (config.test) {
-          console.log("️❌  After the deadline - " + it);
-        } else {
-          debug(it);
-        }
-      });
-  } else {
-    return [];
+let defaultConfig = {
+  atd: {
+    url: "http://127.0.0.1:1049"
   }
+};
+
+function _check(config, text) {
+  let { url } = config.atd;
+  text = urlencode(text);
+  return checkGrammar(url, text)
+    .then(it => {
+      return xmlparse(it.text);
+    })
+    .then(it => {
+      return _.map(it.results.error, _.bind(processItem, config));
+    });
 }
 
-function testIt() {
-  check({
-    text: "this has been done"
-  });
+function check(config) {
+  config = _.merge({}, defaultConfig, config);
+  return _check(config, config.text)
+    .then(errorCollection => {
+      return decimateErrors(config, errorCollection);
+    })
+    .catch(() => []);
+}
+
+function test(config, logger) {
+  config = _.merge({}, defaultConfig, config);
+  let text = "This is a test.";
+  logger.debug(JSON.stringify({ atd: config.atd }, 0, 4));
+  _check(config, text).then(
+    () => console.log("️✅  After the deadline"),
+    err => console.log("️❌  After the deadline - " + err)
+  );
 }
 
 module.exports = {
   check,
-  testIt
+  test,
+  defaultConfig
 };
