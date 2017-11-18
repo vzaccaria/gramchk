@@ -52,7 +52,13 @@ let readUnsugaredTex = (config, file) => {
       silent: true
     });
   }
-  return rtex_p.then(t => t[0]);
+  return rtex_p.then(
+    t => {
+      debug(t);
+      return t[0];
+    },
+    t => debug(t)
+  );
 };
 
 function readUnsugared(config) {

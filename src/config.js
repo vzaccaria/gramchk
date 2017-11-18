@@ -10,14 +10,14 @@ let debugConfig = require("debug")("grmcheck_config");
 
 function readConfig(config) {
   let data;
-  if (!_.isUndefined(config.file) && _.isUndefined(config.rulefile)) {
-    let rulefile = _.get(config, "rulefile", "/.gramchk.yml");
-    data = read(rulefile, { cwd: path.dirname(config.file) });
+  if (!_.isUndefined(config.file) && _.isUndefined(config.configfile)) {
+    let configfile = "/.gramchk.yml";
+    data = read(configfile, { cwd: path.dirname(config.file) });
     data = $yaml.safeLoad(data);
     return $b.resolve(_.assign(config, data));
   } else {
-    if (!_.isUndefined(config.rulefile)) {
-      return readFile(config.rulefile).then(data => {
+    if (!_.isUndefined(config.configfile)) {
+      return readFile(config.configfile).then(data => {
         data = $yaml.safeLoad(data);
         return $b.resolve(_.assign(config, data));
       });

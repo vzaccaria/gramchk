@@ -23,21 +23,14 @@ prog
   .command("check", "Checks <file>")
   .argument("<file>", "Top level file or directory")
   .option("--maxerr <num>", "Max <num> of errors", prog.INT, 100)
-  .option(
-    "--auto",
-    "Determine if it is a latex file from extension",
-    prog.BOOL,
-    false
-  )
   .option("--detex", "Use detex instead of huntex", prog.BOOL, false)
-  .option("--latex", "Is it a latex file", prog.BOOL, false)
-  .option("--rulefile <file>", "Use explicit rulefile")
+  .option("--configfile <file>", "Use config file")
   .option("--dump", "Dump unsugared and exit", prog.BOOL, false)
   .action(function(args, options) {
-    if (options.auto) {
-      if (path.extname(args.file) === ".tex") {
-        options.latex = true;
-      }
+    if (path.extname(args.file) === ".tex") {
+      options.latex = true;
+    } else {
+      options.latex = false;
     }
     if (options.latex) {
       if (options.detex) {
@@ -67,10 +60,10 @@ prog
       .then(csoutput);
   })
   .command("test", "Test if servers and commands are available")
-  .option("--rulefile <file>", "Use explicit rulefile")
-    .action(function(args, options, logger) {
+  .option("--configfile <file>", "Use config file")
+  .action(function(args, options, logger) {
     readConfig(options).then(c => {
-        return $b.all([langtool.test(c, logger), atdtool.test(c, logger)]);
+      return $b.all([langtool.test(c, logger), atdtool.test(c, logger)]);
     });
   })
   .command("dumpconfig", "Dumps default config")
