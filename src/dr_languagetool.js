@@ -86,8 +86,8 @@ function test(config, logger) {
 
 function check(config) {
   config = _.merge({}, defaultConfig, config);
-  return _check(config, config.text)
-    .then(errorCollection => {
+  return _check(config, config.text).then(
+    errorCollection => {
       return decimateErrors(
         config,
         removeSuggestions(
@@ -95,8 +95,11 @@ function check(config) {
           config.languagetool.ignoredSuggestions
         )
       );
-    })
-    .catch(() => []);
+    },
+    () => {
+      return [];
+    }
+  );
 }
 
 module.exports = {

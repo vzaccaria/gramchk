@@ -11,12 +11,15 @@ function process(config) {
   let text = config.text;
   return execWithString(c => `proselint ${c} -j`, text, {})
     .then(d => JSON.parse(d))
-    .then(data => {
-      debug(data);
-      let suggestions = data.data.errors;
-      let errorCollection = _.map(suggestions, _.bind(processItem, config));
-      return addErrors(config, errorCollection);
-    });
+    .then(
+      data => {
+        debug(data);
+        let suggestions = data.data.errors;
+        let errorCollection = _.map(suggestions, _.bind(processItem, config));
+        return addErrors(config, errorCollection);
+      },
+      () => []
+    );
 }
 
 function processItem(i) {

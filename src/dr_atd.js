@@ -77,11 +77,14 @@ function _check(config, text) {
 
 function check(config) {
   config = _.merge({}, defaultConfig, config);
-  return _check(config, config.text)
-    .then(errorCollection => {
+  return _check(config, config.text).then(
+    errorCollection => {
       return decimateErrors(config, errorCollection);
-    })
-    .catch(() => []);
+    },
+    () => {
+      return [];
+    }
+  );
 }
 
 function test(config, logger) {
