@@ -54,8 +54,12 @@ function _check(_config, text) {
     url,
     disabledRules,
     ignoredSuggestions,
-    language
+    language,
+    disabled
   } = _config.languagetool;
+  if (disabled) {
+    return Promise.reject("disabled");
+  }
   text = urlencode(text);
   return agent
     .post(url)

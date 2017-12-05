@@ -64,7 +64,11 @@ let defaultConfig = {
 };
 
 function _check(config, text) {
-  let { url } = config.atd;
+  let { url, disabled } = config.atd;
+  if (disabled) {
+    return Promise.reject("disabled");
+  }
+
   text = urlencode(text);
   return checkGrammar(url, text)
     .then(it => {
