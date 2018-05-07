@@ -46,6 +46,16 @@ function check(config) {
   return process(config);
 }
 
+function test(config, logger) {
+  config.text = "This is a test.";
+  logger.debug(JSON.stringify({ proselint: config.proselint }, 0, 4));
+  check(config).then(
+    () => console.log("️✅  Proselint"),
+    err => console.log("️❌  Proselint - " + err)
+  );
+}
+
 module.exports = {
-  check
+  check,
+  test
 };

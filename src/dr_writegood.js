@@ -66,10 +66,22 @@ function processItemWG(i) {
   return o;
 }
 
+function test(config, logger) {
+  config.text = "This is a test.";
+  logger.debug(JSON.stringify({ writegood: config.writegood }, 0, 4));
+  try {
+    check(config);
+    console.log("️✅  Writegood");
+  } catch (err) {
+    console.log("️❌  Writegood - " + err);
+  }
+}
+
 function check(config) {
   return [processWriteGood(config), processAlex(config)];
 }
 
 module.exports = {
-  check
+  check,
+  test
 };

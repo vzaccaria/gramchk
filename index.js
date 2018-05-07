@@ -8,8 +8,8 @@ const $b = require("bluebird");
 const _ = require("lodash");
 let langtool = require("./src/dr_languagetool");
 let atdtool = require("./src/dr_atd");
-let writegoodtool = require("./src/dr_writegood").check;
-let proselinttool = require("./src/dr_proselint").check;
+let writegoodtool = require("./src/dr_writegood");
+let proselinttool = require("./src/dr_proselint");
 let csoutput = require("./src/checkstyle");
 let debug = require("debug")(__filename);
 let readUnsugared = require("./src/unsugar");
@@ -46,8 +46,8 @@ prog
         return $b.all([
           langtool.check(config),
           atdtool.check(config),
-          writegoodtool(config),
-          proselinttool(config)
+          writegoodtool.check(config),
+          proselinttool.check(config)
         ]);
       })
       .then(res => {
@@ -63,7 +63,12 @@ prog
   .option("--configfile <file>", "Use config file")
   .action(function(args, options, logger) {
     readConfig(options).then(c => {
-      return $b.all([langtool.test(c, logger), atdtool.test(c, logger)]);
+      return $b.all([
+        langtool.test(c, logger),
+        atdtool.test(c, logger),
+        writegoodtool.test(c, logger),
+        proselinttool.test(c, logger)
+      ]);
     });
   })
   .command("dumpconfig", "Dumps default config")
